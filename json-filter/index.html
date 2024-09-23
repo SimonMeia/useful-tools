@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Importer, Filtrer et Exporter JSON</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Importer, Filtrer et Exporter JSON</h1>
+        <div class="space-y-4">
+            <input type="file" id="fileInput" accept=".json"
+                class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div id="columnSelection" class="space-y-2"></div>
+            <button id="exportBtn" style="display: none;"
+            class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out">
+                Exporter JSON Filtré
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let jsonData = null;
+
+        document.getElementById('fileInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                jsonData = JSON.parse(e.target.result);
+                displayColumnSelection(jsonData);
+            };
+
+            reader.readAsText(file);
+        });
+
+        function displayColumnSelection(data) {
+            const columnSelectionDiv = document.getElementById('columnSelection');
+            columnSelectionDiv.innerHTML = '';
+
+            const columns = Object.keys(data[0]);
+            columns.forEach((column) => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = column;
+                checkbox.checked = true;
+                checkbox.classList.add('mr-2', 'cursor-pointer');
+
+                const label = document.createElement('label');
+                label.htmlFor = column;
+                label.textContent = column;
+                label.classList.add('text-gray-700', 'font-medium', 'cursor-pointer');
+
+                const div = document.createElement('div');
+                div.classList.add('flex', 'items-center', 'space-x-2');
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                columnSelectionDiv.appendChild(div);
+            });
+
+            document.getElementById('exportBtn').style.display = 'block';
+        }
+
+        document.getElementById('exportBtn').addEventListener('click', function () {
+            const selectedColumns = [];
+            const checkboxes = document.querySelectorAll('#columnSelection input[type=checkbox]');
+            checkboxes.forEach((checkbox) => {
+                if (checkbox.checked) {
+                    selectedColumns.push(checkbox.id);
+                }
+            });
+
+            const filteredData = jsonData.map((row) => {
+                const filteredRow = {};
+                selectedColumns.forEach((column) => {
+                    filteredRow[column] = row[column];
+                });
+                return filteredRow;
+            });
+
+            exportFilteredJson(filteredData);
+        });
+
+        function exportFilteredJson(data) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'filtered_data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+
+</html>
