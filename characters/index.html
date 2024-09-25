@@ -8,7 +8,33 @@
     </head>
 
     <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-        <div class="w-full max-w-2xl p-6 bg-white rounded-lg shadow-lg">
+        <div class="w-full max-w-2xl p-6 bg-white rounded-lg shadow-lg relative">
+            <!-- Icon info ajouté ici -->
+            <div class="absolute top-4 left-4">
+                <div class="group relative flex items-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        class="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                        />
+                    </svg>
+                    <!-- Tooltip au survol vers le bas à gauche -->
+                    <div
+                        class="absolute w-64 bg-gray-900 text-white text-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none left-0 top-10"
+                    >
+                        Le nombre de caractères inclut les retours à la ligne (\n).
+                    </div>
+                </div>
+            </div>
+
             <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
                 Générateur de texte
             </h1>
@@ -87,9 +113,17 @@
                     placeholder="Le texte généré apparaîtra ici..."
                     readonly
                 ></textarea>
-                <div class="text-sm text-gray-600">
-                    Mots: <span id="wordCountDisplay">0</span> | Caractères:
-                    <span id="charCountDisplay">0</span>
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-600">
+                        Mots: <span id="wordCountDisplay">0</span> | Caractères:
+                        <span id="charCountDisplay">0</span>
+                    </div>
+                    <button
+                        id="copyBtn"
+                        class="px-3 py-1.5 bg-green-500 text-white font-medium rounded-lg border border-transparent hover:bg-green-600 transition duration-200 ease-in-out"
+                    >
+                        Copier le texte
+                    </button>
                 </div>
             </div>
         </div>
@@ -102,6 +136,7 @@
             const outputText = document.getElementById("outputText");
             const wordCountDisplay = document.getElementById("wordCountDisplay");
             const charCountDisplay = document.getElementById("charCountDisplay");
+            const copyBtn = document.getElementById("copyBtn");
 
             const generateRandomText = (
                 paragraphCount,
@@ -235,7 +270,18 @@
                 // Mettre à jour le texte généré
                 outputText.value = text;
 
-                // Mettre à jour les compteurs de mots et de caractères
+                updateCounters();
+            }
+
+            // Fonction pour copier le texte
+            function copyText() {
+                outputText.select();
+                document.execCommand("copy");
+            }
+
+            // Fonction pour mettre à jour les compteurs de mots et de caractères
+            function updateCounters() {
+                const text = outputText.value;
                 const wordCount = text.split(/\s+/).filter(Boolean).length;
                 const charCount = text.length;
 
@@ -243,7 +289,17 @@
                 charCountDisplay.textContent = charCount;
             }
 
-            generateBtn.addEventListener("click", generateText);
+            // Mettre à jour les compteurs lorsqu'on colle du texte
+            outputText.addEventListener("input", updateCounters);
+
+            // Bouton de copie
+            copyBtn.addEventListener("click", copyText);
+
+            // Génération du texte et mise à jour des compteurs
+            generateBtn.addEventListener("click", () => {
+                generateText();
+                updateCounters();
+            });
         </script>
     </body>
 </html>
