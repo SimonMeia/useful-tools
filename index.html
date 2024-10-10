@@ -8,63 +8,70 @@
     <body class="bg-gray-100 flex items-center justify-center min-h-screen">
         <div class="w-full max-w-md p-4 bg-white rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Useful tools</h2>
-            <ul class="space-y-2">
-                <li>
-                    <a
-                        href="./characters"
-                        class="block p-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm text-gray-700 font-medium"
-                    >
-                        Characters counter & Text generator
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="./json-parse"
-                        class="block p-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm text-gray-700 font-medium"
-                    >
-                        JSON Parse
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="./json-filter"
-                        class="block p-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm text-gray-700 font-medium"
-                    >
-                        JSON Filter
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="./csv-to-insert-sql"
-                        class="block p-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm text-gray-700 font-medium"
-                    >
-                        CSV to SQL inserts
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="https://image-hoster-nine.vercel.app/docs"
-                        target="_blank"
-                        class="flex items-center justify-between space-x-2 p-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm text-gray-700 font-medium"
-                    >
-                        <span>Image Hosting API</span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="2"
-                            stroke="currentColor"
-                            class="size-5 text-gray-500"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                            />
-                        </svg>
-                    </a>
-                </li>
+            <ul id="toolsList" class="space-y-2">
+                <!-- List items will be generated here -->
             </ul>
         </div>
+
+        <!-- Hidden template -->
+        <template id="tool-template">
+            <li>
+                <a
+                    href=""
+                    class="flex items-center justify-between space-x-2 p-3 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm text-gray-700 font-medium"
+                >
+                    <span class="tool-name"></span>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="size-5 text-gray-500 external-icon hidden"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                        />
+                    </svg>
+                </a>
+            </li>
+        </template>
+
+        <script>
+            const tools = [
+                { name: "Characters counter & Text generator", url: "./characters" },
+                { name: "JSON Parse", url: "./json-parse" },
+                { name: "JSON Filter", url: "./json-filter" },
+                { name: "CSV to SQL inserts", url: "./csv-to-insert-sql" },
+                { name: "Location finder", url: "./location-finder/" },
+                {
+                    name: "Image Hosting API",
+                    url: "https://image-hoster-nine.vercel.app/docs",
+                    external: true,
+                },
+            ];
+
+            const toolsList = document.getElementById("toolsList");
+            const template = document.getElementById("tool-template");
+
+            tools.forEach((tool) => {
+                const clone = template.content.cloneNode(true);
+                const a = clone.querySelector("a");
+                const span = clone.querySelector(".tool-name");
+                const externalIcon = clone.querySelector(".external-icon");
+
+                a.href = tool.url;
+                span.textContent = tool.name;
+
+                if (tool.external) {
+                    a.target = "_blank";
+                    externalIcon.classList.remove("hidden");
+                }
+
+                toolsList.appendChild(clone);
+            });
+        </script>
     </body>
 </html>

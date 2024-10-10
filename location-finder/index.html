@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Location finder</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
+            <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
+                Recherche par Code Postal
+            </h1>
+            <div class="space-y-4">
+                <input
+                    type="text"
+                    id="zipCode"
+                    class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Entrez le code postal"
+                />
+                <button
+                    id="clearSearch"
+                    class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                >
+                    Effacer la recherche
+                </button>
+            </div>
+
+            <div id="results" class="mt-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Résultats:</h2>
+                <div class="overflow-hidden">
+                    <div class="overflow-x-auto overflow-y-auto h-96">
+                        <table id="resultsTable" class="w-full bg-white">
+                            <thead class="sticky top-0 bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left">NPA</th>
+                                    <th class="px-4 py-2 text-left">Ville</th>
+                                    <th class="px-4 py-2 text-left">Canton</th>
+                                    <th class="px-4 py-2 text-left">Latitude</th>
+                                    <th class="px-4 py-2 text-left">Longitude</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let csvData = [];
+
+            // Charger le fichier CSV au chargement de la page
+            window.addEventListener("load", function () {
+                Papa.parse("data.csv", {
+                    download: true,
+                    header: false,
+                    complete: function (results) {
+                        csvData = results.data.slice(1);
+                        console.log("CSV chargé:", csvData);
+                    },
+                });
+            });
+
+            document.getElementById("zipCode").addEventListener("input", function () {
+                const zipCode = this.value;
+                const results = csvData.filter((row) => row[0].startsWith(zipCode));
+                displayResults(results);
+            });
+
+            document.getElementById("clearSearch").addEventListener("click", function () {
+                document.getElementById("zipCode").value = "";
+                displayResults([]);
+            });
+
+            function displayResults(results) {
+                const tbody = document.querySelector("#resultsTable tbody");
+                tbody.innerHTML = "";
+                results.forEach((row) => {
+                    const tr = document.createElement("tr");
+
+                    // NPA (Code Postal)
+                    const tdNPA = document.createElement("td");
+                    tdNPA.textContent = row[0];
+                    tdNPA.className = "px-4 py-2 border-b";
+                    tr.appendChild(tdNPA);
+
+                    // Ville
+                    const tdVille = document.createElement("td");
+                    tdVille.textContent = row[1];
+                    tdVille.className = "px-4 py-2 border-b";
+                    tr.appendChild(tdVille);
+
+                    // Canton (state_name et state_code combinés)
+                    const tdCanton = document.createElement("td");
+                    tdCanton.textContent = `${row[2]} (${row[3]})`;
+                    tdCanton.className = "px-4 py-2 border-b";
+                    tr.appendChild(tdCanton);
+
+                    // Latitude
+                    const tdLatitude = document.createElement("td");
+                    tdLatitude.textContent = row[4];
+                    tdLatitude.className = "px-4 py-2 border-b";
+                    tr.appendChild(tdLatitude);
+
+                    // Longitude
+                    const tdLongitude = document.createElement("td");
+                    tdLongitude.textContent = row[5];
+                    tdLongitude.className = "px-4 py-2 border-b";
+                    tr.appendChild(tdLongitude);
+
+                    tbody.appendChild(tr);
+                });
+            }
+        </script>
+    </body>
+</html>
