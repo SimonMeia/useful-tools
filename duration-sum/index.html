@@ -173,6 +173,8 @@
 
             function handleKeyDown(event) {
                 if (event.key === "Enter") {
+                    calculateTotal();
+                } else if (event.key === "+") {
                     event.preventDefault();
                     const newInput = createDurationInput();
                     event.target.parentElement.insertAdjacentElement("afterend", newInput);
