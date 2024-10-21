@@ -33,7 +33,7 @@
                             <li>4h 30</li>
                             <li>4h30</li>
                             <li>4.30</li>
-                            <li>4,30m</li>
+                            <li>4,30</li>
                             <li>4 30</li>
                         </ul>
                     </div>
@@ -141,12 +141,12 @@
                     let minutes = 0;
 
                     // Gestion du format "4.30" ou "4,30"
-                    const decimalMatch = value.match(/^(\d+)[.,](\d{1,2})$/);
+                    const decimalMatch = value.match(/^(\d+)[.,](\d{1,10})$/);
                     if (decimalMatch) {
                         hours = parseInt(decimalMatch[1]);
 
                         if (decimalMatch[2].length > 1) {
-                            minutes = parseInt(decimalMatch[2].slice(0, 2));
+                            minutes = parseInt(decimalMatch[2]);
                         } else {
                             minutes = parseInt(decimalMatch[2]) * 10;
                         }
