@@ -1,79 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSON Parse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>JSON Parse</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
 
-  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
-      <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">JSON Parse</h1>
-      <div class="space-y-4">
-        <input
-          id="input"
-          type="text"
-          placeholder="Enter JSON here"
-          class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <div class="flex space-x-2">
-          <button
-            id="parse"
-            class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
-          >
-            Parse
-          </button>
-          <button
-            id="minimize"
-            class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
-          >
-            Minimize
-          </button>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <a href="/">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="w-8 h-8 text-gray-500 hover:text-gray-700 cursor-pointer fixed top-4 left-4"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9.75l9-7.5 9 7.5v9.75a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 19.5V9.75z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 22V12h6v10"
+                />
+            </svg>
+        </a>
+        <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
+            <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">JSON Parse</h1>
+            <div class="space-y-4">
+                <input
+                    id="input"
+                    type="text"
+                    placeholder="Enter JSON here"
+                    class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <div class="flex space-x-2">
+                    <button
+                        id="parse"
+                        class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                    >
+                        Parse
+                    </button>
+                    <button
+                        id="minimize"
+                        class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                    >
+                        Minimize
+                    </button>
+                </div>
+                <button
+                    id="copy"
+                    class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                >
+                    Copy to Clipboard
+                </button>
+            </div>
+            <pre
+                id="output"
+                class="mt-4 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto h-40 border border-gray-300 text-sm text-gray-700"
+            ></pre>
         </div>
-        <button
-          id="copy"
-          class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
-        >
-          Copy to Clipboard
-        </button>
-      </div>
-      <pre
-        id="output"
-        class="mt-4 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto h-40 border border-gray-300 text-sm text-gray-700"
-      ></pre>
-    </div>
-    <script defer>
-      document.getElementById("parse").addEventListener("click", () => {
-        try {
-          const input = JSON.parse(
-            document.getElementById("input").value.replace(/\\n/g, "").replace(/\\"/g, '"')
-          );
-          let formattedJson = JSON.stringify(input, null, 2);
-          document.getElementById("output").textContent = formattedJson;
-        } catch (error) {
-          alert("Invalid JSON");
-        }
-        document.getElementById("input").value = "";
-      });
+        <script defer>
+            document.getElementById("parse").addEventListener("click", () => {
+                try {
+                    const input = JSON.parse(
+                        document
+                            .getElementById("input")
+                            .value.replace(/\\n/g, "")
+                            .replace(/\\"/g, '"')
+                    );
+                    let formattedJson = JSON.stringify(input, null, 2);
+                    document.getElementById("output").textContent = formattedJson;
+                } catch (error) {
+                    alert("Invalid JSON");
+                }
+                document.getElementById("input").value = "";
+            });
 
-      document.getElementById("minimize").addEventListener("click", () => {
-        try {
-          const input = JSON.parse(
-            document.getElementById("input").value.replace(/\\n/g, "").replace(/\\"/g, '"')
-          );
-          let minimizedJson = JSON.stringify(input);
-          document.getElementById("output").textContent = minimizedJson.replace(/"/g, "'");
-        } catch (error) {
-          alert("Invalid JSON");
-        }
-        document.getElementById("input").value = "";
-      });
+            document.getElementById("minimize").addEventListener("click", () => {
+                try {
+                    const input = JSON.parse(
+                        document
+                            .getElementById("input")
+                            .value.replace(/\\n/g, "")
+                            .replace(/\\"/g, '"')
+                    );
+                    let minimizedJson = JSON.stringify(input);
+                    document.getElementById("output").textContent = minimizedJson.replace(
+                        /"/g,
+                        "'"
+                    );
+                } catch (error) {
+                    alert("Invalid JSON");
+                }
+                document.getElementById("input").value = "";
+            });
 
-      document.getElementById("copy").addEventListener("click", () => {
-        const outputText = document.getElementById("output").textContent;
-        navigator.clipboard.writeText(outputText).catch((err) => alert("Failed to copy text"));
-      });
-    </script>
-  </body>
+            document.getElementById("copy").addEventListener("click", () => {
+                const outputText = document.getElementById("output").textContent;
+                navigator.clipboard
+                    .writeText(outputText)
+                    .catch((err) => alert("Failed to copy text"));
+            });
+        </script>
+    </body>
 </html>
