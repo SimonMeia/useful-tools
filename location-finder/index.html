@@ -80,14 +80,16 @@
                     header: false,
                     complete: function (results) {
                         csvData = results.data.slice(1);
-                        console.log("CSV chargé:", csvData);
+                        displayResults(csvData.sort((a, b) => a[0] - b[0]));
                     },
                 });
             });
 
             document.getElementById("zipCode").addEventListener("input", function () {
                 const zipCode = this.value;
-                const results = csvData.filter((row) => row[0].startsWith(zipCode));
+                const results = csvData
+                    .filter((row) => row[0].startsWith(zipCode))
+                    .sort((a, b) => a[0] - b[0]);
                 displayResults(results);
             });
 
