@@ -30,41 +30,47 @@
                 />
             </svg>
         </a>
-        <div class="w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
-            <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
-                Recherche par Code Postal
-            </h1>
-            <div class="space-y-4">
-                <input
-                    type="text"
-                    id="zipCode"
-                    class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Entrez le code postal"
-                />
-                <button
-                    id="clearSearch"
-                    class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
-                >
-                    Effacer la recherche
-                </button>
-            </div>
 
-            <div id="results" class="mt-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-2">Résultats:</h2>
-                <div class="overflow-hidden">
-                    <div class="overflow-x-auto overflow-y-auto h-96">
-                        <table id="resultsTable" class="w-full bg-white">
-                            <thead class="sticky top-0 bg-gray-100">
-                                <tr>
-                                    <th class="px-4 py-2 text-left">NPA</th>
-                                    <th class="px-4 py-2 text-left">Ville</th>
-                                    <th class="px-4 py-2 text-left">Canton</th>
-                                    <th class="px-4 py-2 text-left">Latitude</th>
-                                    <th class="px-4 py-2 text-left">Longitude</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+        <div class="max-w-4xl w-full mx-auto">
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h1 class="text-xl font-semibold text-gray-800">Recherche par Code Postal</h1>
+                </div>
+
+                <div class="p-6">
+                    <div class="space-y-6">
+                        <input
+                            type="number"
+                            id="zipCode"
+                            min="0"
+                            class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                            placeholder="Entrez le code postal"
+                        />
+                        <button
+                            id="clearSearch"
+                            class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                        >
+                            Effacer la recherche
+                        </button>
+                        <div id="results">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-2">Résultats:</h2>
+                            <div class="overflow-hidden">
+                                <div class="overflow-x-auto overflow-y-auto h-96">
+                                    <table id="resultsTable" class="w-full bg-white">
+                                        <thead class="sticky top-0 bg-gray-100">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left">NPA</th>
+                                                <th class="px-4 py-2 text-left">Ville</th>
+                                                <th class="px-4 py-2 text-left">Canton</th>
+                                                <th class="px-4 py-2 text-left">Latitude</th>
+                                                <th class="px-4 py-2 text-left">Longitude</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

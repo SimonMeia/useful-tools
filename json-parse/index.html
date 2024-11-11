@@ -30,41 +30,54 @@
                 />
             </svg>
         </a>
-        <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
-            <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">JSON Parse</h1>
-            <div class="space-y-4">
-                <input
-                    id="input"
-                    type="text"
-                    placeholder="Enter JSON here"
-                    class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <div class="flex space-x-2">
-                    <button
-                        id="parse"
-                        class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
-                    >
-                        Parse
-                    </button>
-                    <button
-                        id="minimize"
-                        class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
-                    >
-                        Minimize
-                    </button>
+        <div class="w-full max-w-lg">
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h1 class="text-xl font-semibold text-gray-800">JSON Parse</h1>
                 </div>
-                <button
-                    id="copy"
-                    class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
-                >
-                    Copy to Clipboard
-                </button>
+                <div class="space-y-4 p-6">
+                    <input
+                        id="input"
+                        type="text"
+                        placeholder="Enter JSON here"
+                        class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                    />
+                    <div class="flex space-x-2">
+                        <button
+                            id="parse"
+                            class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                        >
+                            Parse
+                        </button>
+                        <button
+                            id="minimize"
+                            class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                        >
+                            Minimize
+                        </button>
+                    </div>
+                    <button
+                        id="copy"
+                        class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                    >
+                        Copy to Clipboard
+                    </button>
+                    <div id="columnSelection" class="space-y-2"></div>
+                    <button
+                        id="exportBtn"
+                        style="display: none"
+                        class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                    >
+                        Exporter JSON Filtré
+                    </button>
+                    <pre
+                        id="output"
+                        class="mt-4 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto h-40 border border-gray-300 text-sm text-gray-700"
+                    ></pre>
+                </div>
             </div>
-            <pre
-                id="output"
-                class="mt-4 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto h-40 border border-gray-300 text-sm text-gray-700"
-            ></pre>
         </div>
+
         <script defer>
             document.getElementById("parse").addEventListener("click", () => {
                 try {

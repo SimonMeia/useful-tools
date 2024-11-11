@@ -1,216 +1,254 @@
 <!DOCTYPE html>
 <html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CSV to SQL Insert</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSV to SQL Insert</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <a href="/">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="w-8 h-8 text-gray-500 hover:text-gray-700 cursor-pointer fixed top-4 left-4"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9.75l9-7.5 9 7.5v9.75a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 19.5V9.75z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 22V12h6v10"
+                />
+            </svg>
+        </a>
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <a href="/">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            class="w-8 h-8 text-gray-500 hover:text-gray-700 cursor-pointer fixed top-4 left-4"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 9.75l9-7.5 9 7.5v9.75a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 19.5V9.75z"
-            />
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 22V12h6v10"
-            />
-        </svg>
-    </a>
-    <div class="container mx-auto p-8 max-w-4xl bg-white rounded-lg shadow-lg">
-        <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Convertir CSV en Requêtes SQL</h1>
+        <div class="max-w-4xl w-full mx-auto">
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h1 class="text-xl font-semibold text-gray-800">
+                        Convertir CSV en Requêtes SQL
+                    </h1>
+                </div>
 
-        <div class="mb-4">
-            <label for="csvFile" class="block text-gray-700 font-medium mb-2">Sélectionner le fichier CSV:</label>
-            <input type="file" id="csvFile" accept=".csv"
-                class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <div class="p-6">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label
+                                for="csvFile"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >Sélectionner le fichier CSV:</label
+                            >
+                            <input
+                                type="file"
+                                id="csvFile"
+                                accept=".csv"
+                                class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                            />
+                        </div>
+
+                        <div>
+                            <label
+                                for="tableName"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >Nom de la table SQL:</label
+                            >
+                            <input
+                                type="text"
+                                id="tableName"
+                                placeholder="Nom de la table"
+                                class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                            />
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Colonnes CSV :</h3>
+                            <div id="columnsContainer" class="mb-4 space-y-2"></div>
+                        </div>
+
+                        <button
+                            id="convertButton"
+                            class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                        >
+                            Convertir en SQL
+                        </button>
+
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                                Requêtes SQL générées:
+                            </h3>
+                            <textarea
+                                id="sqlOutput"
+                                readonly
+                                class="block w-full h-40 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                            ></textarea>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button
+                                id="downloadButton"
+                                class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                            >
+                                Télécharger SQL
+                            </button>
+                            <button
+                                id="copyButton"
+                                class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                            >
+                                Copier dans le presse-papier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="mb-4">
-            <label for="tableName" class="block text-gray-700 font-medium mb-2">Nom de la table SQL:</label>
-            <input type="text" id="tableName" placeholder="Nom de la table"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Colonnes CSV :</h3>
-        <div id="columnsContainer" class="mb-4 space-y-2"></div>
-
-        <button id="convertButton"
-            class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out">
-            Convertir en SQL
-        </button>
-
-
-        <div class="mt-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Requêtes SQL générées:</h3>
-            <textarea id="sqlOutput" readonly
-                class="w-full h-40 p-4 border border-gray-300 rounded-lg shadow-inner bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-
-        <div class="flex gap-4">
-            <button id="downloadButton"
-                class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out">
-                Télécharger SQL
-            </button>
-            <button id="copyButton"
-                class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out">
-                Copier dans le presse-papier
-            </button>
-        </div>
-    </div>
-    </div>
-
-    <script>
-        function escapeSQL(value) {
-            if (typeof value === "string") {
-                return value.replace(/'/g, "''");
-            }
-            return value === null || value === undefined ? "" : value;
-        }
-
-        function generateColumnInputs(columnNames) {
-            const columnsContainer = document.getElementById("columnsContainer");
-            columnsContainer.innerHTML = "";
-
-            columnNames.forEach((column, index) => {
-                const div = document.createElement("div");
-                div.className = "flex items-center space-x-2";
-
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.id = "columnCheck_" + index;
-                checkbox.checked = true;
-                checkbox.className = "cursor-pointer";
-
-                const input = document.createElement("input");
-                input.type = "text";
-                input.id = "columnName_" + index;
-                input.value = column;
-                input.className = "w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
-
-                div.appendChild(checkbox);
-                div.appendChild(input);
-                columnsContainer.appendChild(div);
-            });
-        }
-
-        document.getElementById("csvFile").addEventListener("change", function (event) {
-            const file = event.target.files[0];
-
-            if (!file) {
-                alert("Veuillez sélectionner un fichier CSV.");
-                return;
+        <script>
+            function escapeSQL(value) {
+                if (typeof value === "string") {
+                    return value.replace(/'/g, "''");
+                }
+                return value === null || value === undefined ? "" : value;
             }
 
-            Papa.parse(file, {
-                complete: function (results) {
-                    const firstRow = results.data[0];
-                    if (firstRow) {
-                        generateColumnInputs(firstRow);
-                    }
-                },
-                header: false,
-            });
-        });
+            function generateColumnInputs(columnNames) {
+                const columnsContainer = document.getElementById("columnsContainer");
+                columnsContainer.innerHTML = "";
 
-        document.getElementById("convertButton").addEventListener("click", function () {
-            const fileInput = document.getElementById("csvFile");
-            const tableName = document.getElementById("tableName").value;
-            const sqlOutput = document.getElementById("sqlOutput");
+                columnNames.forEach((column, index) => {
+                    const div = document.createElement("div");
+                    div.className = "flex items-center space-x-2";
 
-            if (!fileInput.files.length) {
-                alert("Veuillez sélectionner un fichier CSV.");
-                return;
-            }
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.id = "columnCheck_" + index;
+                    checkbox.checked = true;
+                    checkbox.className = "cursor-pointer";
 
-            if (!tableName) {
-                alert("Veuillez spécifier le nom de la table SQL.");
-                return;
-            }
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.id = "columnName_" + index;
+                    input.value = column;
+                    input.className =
+                        "w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
 
-            const file = fileInput.files[0];
-
-            Papa.parse(file, {
-                complete: function (results) {
-                    const data = results.data.slice(1);
-                    let sqlQueries = "";
-
-                    const selectedColumns = [];
-                    const columnCount = results.data[0].length;
-                    for (let i = 0; i < columnCount; i++) {
-                        const checkbox = document.getElementById("columnCheck_" + i);
-                        const columnName = document.getElementById("columnName_" + i).value;
-                        if (checkbox.checked && columnName) {
-                            selectedColumns.push({ name: columnName, index: i });
-                        }
-                    }
-
-                    if (selectedColumns.length === 0) {
-                        alert("Aucune colonne sélectionnée.");
-                        return;
-                    }
-
-                    data.forEach((row) => {
-                        const values = selectedColumns.map((col) => `'${escapeSQL(row[col.index])}'`).join(", ");
-                        const columnNames = selectedColumns.map((col) => col.name).join(", ");
-                        const query = `INSERT INTO ${tableName} (${columnNames}) VALUES (${values});`;
-                        sqlQueries += query + "\n";
-                    });
-
-                    sqlOutput.value = sqlQueries;
-                },
-                header: false,
-            });
-        });
-
-        document.getElementById("downloadButton").addEventListener("click", function () {
-            const sql = document.getElementById("sqlOutput").value;
-            if (!sql) {
-                alert("Rien à télécharger.");
-                return;
-            }
-
-            const blob = new Blob([sql], { type: "text/sql" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "insert_queries.sql";
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        document.getElementById("copyButton").addEventListener("click", function () {
-            const sql = document.getElementById("sqlOutput").value;
-            if (!sql) {
-                alert("Rien à copier.");
-                return;
-            }
-
-            navigator.clipboard
-                .writeText(sql)
-                .then(function () {
-                    alert("Requêtes SQL copiées dans le presse-papier !");
-                })
-                .catch(function (err) {
-                    alert("Erreur lors de la copie : " + err);
+                    div.appendChild(checkbox);
+                    div.appendChild(input);
+                    columnsContainer.appendChild(div);
                 });
-        });
-    </script>
-</body>
+            }
 
+            document.getElementById("csvFile").addEventListener("change", function (event) {
+                const file = event.target.files[0];
+
+                if (!file) {
+                    alert("Veuillez sélectionner un fichier CSV.");
+                    return;
+                }
+
+                Papa.parse(file, {
+                    complete: function (results) {
+                        const firstRow = results.data[0];
+                        if (firstRow) {
+                            generateColumnInputs(firstRow);
+                        }
+                    },
+                    header: false,
+                });
+            });
+
+            document.getElementById("convertButton").addEventListener("click", function () {
+                const fileInput = document.getElementById("csvFile");
+                const tableName = document.getElementById("tableName").value;
+                const sqlOutput = document.getElementById("sqlOutput");
+
+                if (!fileInput.files.length) {
+                    alert("Veuillez sélectionner un fichier CSV.");
+                    return;
+                }
+
+                if (!tableName) {
+                    alert("Veuillez spécifier le nom de la table SQL.");
+                    return;
+                }
+
+                const file = fileInput.files[0];
+
+                Papa.parse(file, {
+                    complete: function (results) {
+                        const data = results.data.slice(1);
+                        let sqlQueries = "";
+
+                        const selectedColumns = [];
+                        const columnCount = results.data[0].length;
+                        for (let i = 0; i < columnCount; i++) {
+                            const checkbox = document.getElementById("columnCheck_" + i);
+                            const columnName = document.getElementById("columnName_" + i).value;
+                            if (checkbox.checked && columnName) {
+                                selectedColumns.push({ name: columnName, index: i });
+                            }
+                        }
+
+                        if (selectedColumns.length === 0) {
+                            alert("Aucune colonne sélectionnée.");
+                            return;
+                        }
+
+                        data.forEach((row) => {
+                            const values = selectedColumns
+                                .map((col) => `'${escapeSQL(row[col.index])}'`)
+                                .join(", ");
+                            const columnNames = selectedColumns.map((col) => col.name).join(", ");
+                            const query = `INSERT INTO ${tableName} (${columnNames}) VALUES (${values});`;
+                            sqlQueries += query + "\n";
+                        });
+
+                        sqlOutput.value = sqlQueries;
+                    },
+                    header: false,
+                });
+            });
+
+            document.getElementById("downloadButton").addEventListener("click", function () {
+                const sql = document.getElementById("sqlOutput").value;
+                if (!sql) {
+                    alert("Rien à télécharger.");
+                    return;
+                }
+
+                const blob = new Blob([sql], { type: "text/sql" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "insert_queries.sql";
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById("copyButton").addEventListener("click", function () {
+                const sql = document.getElementById("sqlOutput").value;
+                if (!sql) {
+                    alert("Rien à copier.");
+                    return;
+                }
+
+                navigator.clipboard
+                    .writeText(sql)
+                    .then(function () {
+                        alert("Requêtes SQL copiées dans le presse-papier !");
+                    })
+                    .catch(function (err) {
+                        alert("Erreur lors de la copie : " + err);
+                    });
+            });
+        </script>
+    </body>
 </html>
