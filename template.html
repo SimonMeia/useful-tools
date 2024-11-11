@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Calculateur d'Allure de Course</title>
+        <title>Template</title>
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -29,60 +29,120 @@
                 />
             </svg>
         </a>
-        <div class="max-w-2xl mx-auto">
+        <div class="max-w-lg mx-auto w-full">
             <div class="bg-white rounded-lg shadow-lg">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h1 class="text-xl font-semibold text-gray-800">
-                        Calculateur d'Allure de Course
-                    </h1>
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between">
+                    <!-- Titre de l'outil -->
+                    <h1 class="text-xl font-semibold text-gray-800">Titre</h1>
+
+                    <!-- Tooltip -->
+                    <div class="group relative flex items-center">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            class="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                            />
+                        </svg>
+                        <div
+                            class="absolute w-64 bg-gray-900 text-white text-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none -left-60 top-10"
+                        >
+                            Contenu du tooltip
+                        </div>
+                    </div>
                 </div>
 
                 <div class="p-6">
-                    <div class="grid grid-cols-1 gap-6">
-                        <!-- Radio buttons -->
-                        <div class="flex justify-center space-x-6">
-                            <label class="inline-flex items-center">
+                    <div class="space-y-6">
+                        <!-- Inputs -->
+                        <div class="space-y-2">
+                            <div>
+                                <label
+                                    for="textInput"
+                                    class="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    Label
+                                </label>
+                                <!-- Input texte / nombre -->
                                 <input
-                                    type="radio"
-                                    name="calculation"
-                                    value="pace"
-                                    checked
-                                    class="form-radio text-indigo-600"
+                                    type="number"
+                                    id="textInput"
+                                    min="0"
+                                    class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                                    placeholder="Placeholder..."
                                 />
-                                <span class="ml-2">Calculer l'allure</span>
-                            </label>
-                            <label class="inline-flex items-center">
+                            </div>
+
+                            <!-- Input file -->
+                            <div>
+                                <label
+                                    for="fileInput"
+                                    class="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    Label
+                                </label>
                                 <input
-                                    type="radio"
-                                    name="calculation"
-                                    value="distance"
-                                    class="form-radio text-indigo-600"
+                                    type="file"
+                                    id="fileInput"
+                                    accept=".json"
+                                    class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
                                 />
-                                <span class="ml-2">Calculer la distance</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input
-                                    type="radio"
-                                    name="calculation"
-                                    value="duration"
-                                    class="form-radio text-indigo-600"
-                                />
-                                <span class="ml-2">Calculer la durée</span>
-                            </label>
+                            </div>
                         </div>
 
-                        <!-- Champs dynamiques -->
-                        <div id="inputFields" class="space-y-6">
-                            <!-- Les champs seront injectés ici dynamiquement -->
+                        <!-- Boutons -->
+                        <div class="space-y-2">
+                            <button
+                                onclick="console.log('Button clicked!')"
+                                class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                            >
+                                Bouton principal
+                            </button>
+
+                            <div class="flex space-x-2">
+                                <button
+                                    class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                                >
+                                    Bouton secondaire
+                                </button>
+                                <button
+                                    class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                                >
+                                    Bouton secondaire
+                                </button>
+                            </div>
+
+                            <button
+                                onclick="console.log('Button clicked!')"
+                                class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1 px-2 rounded text-sm"
+                            >
+                                Copier le total
+                            </button>
                         </div>
 
-                        <div
-                            class="mt-6 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto border border-gray-300 text-sm text-gray-700"
-                            id="result"
-                        >
-                            <p class="text-center text-gray-600">
-                                Remplissez les champs pour obtenir le résultat
-                            </p>
+                        <!-- Resultat -->
+                        <div class="space-y-2">
+                            <div
+                                id="result"
+                                class="mt-6 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto border border-gray-300 text-sm text-gray-700"
+                            >
+                                <p class="text-center text-gray-600">Exemple de texte</p>
+                            </div>
+
+                            <textarea
+                                id="outputText"
+                                rows="5"
+                                class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                                placeholder="Le texte généré apparaîtra ici..."
+                                readonly
+                            ></textarea>
                         </div>
                     </div>
                 </div>
