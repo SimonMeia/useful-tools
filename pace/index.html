@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Calculateur d'Allure de Course</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 p-6">
+        <a href="/">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="w-8 h-8 text-gray-500 hover:text-gray-700 cursor-pointer fixed top-4 left-4"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9.75l9-7.5 9 7.5v9.75a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 19.5V9.75z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 22V12h6v10"
+                />
+            </svg>
+        </a>
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h5 class="text-xl font-semibold text-gray-800">
+                        Calculateur d'Allure de Course
+                    </h5>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Radio buttons -->
+                        <div class="flex justify-center space-x-6">
+                            <label class="inline-flex items-center">
+                                <input
+                                    type="radio"
+                                    name="calculation"
+                                    value="pace"
+                                    checked
+                                    class="form-radio text-indigo-600"
+                                />
+                                <span class="ml-2">Calculer l'allure</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input
+                                    type="radio"
+                                    name="calculation"
+                                    value="distance"
+                                    class="form-radio text-indigo-600"
+                                />
+                                <span class="ml-2">Calculer la distance</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input
+                                    type="radio"
+                                    name="calculation"
+                                    value="duration"
+                                    class="form-radio text-indigo-600"
+                                />
+                                <span class="ml-2">Calculer la durée</span>
+                            </label>
+                        </div>
+
+                        <!-- Champs dynamiques -->
+                        <div id="inputFields" class="space-y-6">
+                            <!-- Les champs seront injectés ici dynamiquement -->
+                        </div>
+
+                        <div class="bg-gray-50 rounded-md p-4 space-y-2" id="result">
+                            <p class="text-center text-gray-600">
+                                Remplissez les champs pour obtenir le résultat
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const inputFields = document.getElementById("inputFields");
+            const resultDiv = document.getElementById("result");
+            const radioButtons = document.querySelectorAll('input[name="calculation"]');
+
+            // Configuration des champs pour chaque type de calcul
+            const fieldConfigs = {
+                pace: [
+                    { id: "distance", label: "Distance (km)", placeholder: "Entrez la distance" },
+                    { id: "duration", label: "Durée (minutes)", placeholder: "Entrez la durée" },
+                ],
+                distance: [
+                    { id: "duration", label: "Durée (minutes)", placeholder: "Entrez la durée" },
+                    {
+                        id: "pace",
+                        label: "Allure (min/km)",
+                        placeholder: "Format: 5.30 pour 5'30\"",
+                    },
+                ],
+                duration: [
+                    { id: "distance", label: "Distance (km)", placeholder: "Entrez la distance" },
+                    {
+                        id: "pace",
+                        label: "Allure (min/km)",
+                        placeholder: "Format: 5.30 pour 5'30\"",
+                    },
+                ],
+            };
+
+            // Convertit un nombre décimal (ex: 6.30) en minutes décimales (ex: 6.5)
+            function paceInputToMinutes(input) {
+                const wholePart = Math.floor(input);
+                const decimalPart = input % 1;
+                const seconds = Math.round(decimalPart * 100); // 0.30 -> 30 secondes
+                return wholePart + seconds / 60;
+            }
+
+            function formatTime(minutes) {
+                const totalSeconds = Math.round(minutes * 60);
+                const mins = Math.floor(totalSeconds / 60);
+                const secs = totalSeconds % 60;
+                return `${mins}'${secs.toString().padStart(2, "0")}"`;
+            }
+
+            function formatTimeHMS(minutes) {
+                const hours = Math.floor(minutes / 60);
+                const mins = Math.floor(minutes % 60);
+                const secs = Math.round((minutes % 1) * 60);
+
+                if (hours > 0) {
+                    return `${hours}:${mins.toString().padStart(2, "0")}:${secs
+                        .toString()
+                        .padStart(2, "0")}`;
+                }
+                return `${mins}:${secs.toString().padStart(2, "0")}`;
+            }
+
+            function createInputField(field) {
+                return `
+                    <div>
+                        <label for="${field.id}" class="block text-sm font-medium text-gray-700 mb-1">
+                            ${field.label}
+                        </label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input
+                                type="number"
+                                id="${field.id}"
+                                step="0.01"
+                                min="0"
+                                class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                                placeholder="${field.placeholder}"
+                            />
+                        </div>
+                    </div>
+                `;
+            }
+
+            function updateFields(calculationType) {
+                const fields = fieldConfigs[calculationType];
+                inputFields.innerHTML = fields.map(createInputField).join("");
+
+                // Réinitialiser le résultat
+                resultDiv.innerHTML = `
+                    <p class="text-center text-gray-600">
+                        Remplissez les champs pour obtenir le résultat
+                    </p>`;
+
+                // Ajouter les écouteurs d'événements aux nouveaux champs
+                fields.forEach((field) => {
+                    const input = document.getElementById(field.id);
+                    input.addEventListener("input", calculate);
+                });
+            }
+
+            function calculate() {
+                const calculationType = document.querySelector(
+                    'input[name="calculation"]:checked'
+                ).value;
+                const values = {};
+
+                // Récupérer les valeurs des champs actuels
+                fieldConfigs[calculationType].forEach((field) => {
+                    let value = parseFloat(document.getElementById(field.id)?.value || "");
+                    if (field.id === "pace" && !isNaN(value)) {
+                        value = paceInputToMinutes(value);
+                    }
+                    values[field.id] = value;
+                });
+
+                if (Object.values(values).some(isNaN)) return;
+
+                let result;
+                switch (calculationType) {
+                    case "pace":
+                        result = values.duration / values.distance;
+                        resultDiv.innerHTML = `
+                            <p class="text-center text-gray-800 font-medium">
+                                Allure calculée : ${formatTime(result)} min/km
+                            </p>
+                            <p class="text-center text-gray-600 text-sm">
+                                Temps total : ${formatTimeHMS(values.duration)}
+                            </p>`;
+                        break;
+                    case "distance":
+                        result = values.duration / values.pace;
+                        resultDiv.innerHTML = `
+                            <p class="text-center text-gray-800 font-medium">
+                                Distance : ${result.toFixed(3)} km
+                            </p>
+                            <p class="text-center text-gray-600 text-sm">
+                                Pour ${formatTimeHMS(values.duration)} de course à ${formatTime(
+                            values.pace
+                        )} min/km
+                            </p>`;
+                        break;
+                    case "duration":
+                        result = values.distance * values.pace;
+                        resultDiv.innerHTML = `
+                            <p class="text-center text-gray-800 font-medium">
+                                Temps total : ${formatTimeHMS(
+                                    result
+                                )} <span class="text-sm">(${formatTime(result)} min)</span>
+                            </p>
+                            <p class="text-center text-gray-600 text-sm">
+                                Pour ${values.distance} km à ${formatTime(values.pace)} min/km
+                            </p>`;
+                        break;
+                }
+            }
+
+            // Initialiser les champs pour le calcul d'allure (option par défaut)
+            updateFields("pace");
+
+            // Ajouter les écouteurs d'événements aux boutons radio
+            radioButtons.forEach((radio) => {
+                radio.addEventListener("change", (e) => updateFields(e.target.value));
+            });
+        </script>
+    </body>
+</html>
