@@ -5,6 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>JSON Parse</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Intégration de Prism.js CSS -->
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+            rel="stylesheet"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
     </head>
 
     <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -45,81 +52,177 @@
                     <div class="flex space-x-2">
                         <button
                             id="parse"
-                            class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                            class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
                         >
                             Parse
                         </button>
                         <button
                             id="minimize"
-                            class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 transition duration-200 ease-in-out"
+                            class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
                         >
                             Minimize
                         </button>
                     </div>
-                    <button
-                        id="copy"
-                        class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
-                    >
-                        Copy to Clipboard
+                    <div class="relative">
+                        <div class="absolute top-2 right-2 text-gray-500 gap-1 flex">
+                            <button
+                                id="copy"
+                                class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center"
+                                title="Copier dans le presse-papiers"
+                            >
+                                <svg
+                                    class="w-6 h-6 text-gray-800"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 8v3a1 1 0 0 1-1 1H5m11 4h2a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1m4 3v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7.13a1 1 0 0 1 .24-.65L7.7 8.35A1 1 0 0 1 8.46 8H13a1 1 0 0 1 1 1Z"
+                                    />
+                                </svg>
+                            </button>
+                            <button
+                                id="expand"
+                                class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center"
+                                title="Voir en grand"
+                            >
+                                <svg
+                                    class="w-6 h-6 text-gray-800"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                        <pre
+                            id="outputCode"
+                            class="language-json mt-4 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto h-40 border border-gray-300 text-sm text-gray-700"
+                        ></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modale pour afficher le JSON en grand -->
+        <div
+            id="modal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden"
+        >
+            <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-1/2">
+                <div class="flex justify-between items-center p-4 border-b">
+                    <h2 class="text-lg font-semibold">JSON Complet</h2>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
                     </button>
-                    <div id="columnSelection" class="space-y-2"></div>
-                    <button
-                        id="exportBtn"
-                        style="display: none"
-                        class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
-                    >
-                        Exporter JSON Filtré
-                    </button>
+                </div>
+                <div class="p-4">
                     <pre
-                        id="output"
-                        class="mt-4 p-4 bg-gray-100 rounded-lg shadow-inner overflow-auto h-40 border border-gray-300 text-sm text-gray-700"
+                        id="modalCode"
+                        class="language-json bg-gray-100 p-4 rounded-lg overflow-auto h-[calc(100vh-200px)] border border-gray-300 text-sm text-gray-700"
                     ></pre>
                 </div>
             </div>
         </div>
 
         <script defer>
-            document.getElementById("parse").addEventListener("click", () => {
+            // Fonction pour parser le JSON
+            function parseJSON(action) {
                 try {
-                    const input = JSON.parse(
-                        document
-                            .getElementById("input")
-                            .value.replace(/\\n/g, "")
-                            .replace(/\\"/g, '"')
-                    );
-                    let formattedJson = JSON.stringify(input, null, 2);
-                    document.getElementById("output").textContent = formattedJson;
+                    const inputValue = document
+                        .getElementById('input')
+                        .value.replace(/\\n/g, '')
+                        .replace(/\\"/g, '"')
+                    const input = JSON.parse(inputValue)
+                    let outputJson
+                    if (action === 'parse') {
+                        outputJson = JSON.stringify(input, null, 2)
+                    } else if (action === 'minimize') {
+                        outputJson = JSON.stringify(input).replace(/"/g, '"')
+                    }
+                    document.getElementById('outputCode').textContent = outputJson
+                    Prism.highlightElement(document.getElementById('outputCode'))
+                    return outputJson
                 } catch (error) {
-                    alert("Invalid JSON");
+                    alert('Invalid JSON')
+                    return null
+                } finally {
+                    document.getElementById('input').value = ''
                 }
-                document.getElementById("input").value = "";
-            });
+            }
 
-            document.getElementById("minimize").addEventListener("click", () => {
-                try {
-                    const input = JSON.parse(
-                        document
-                            .getElementById("input")
-                            .value.replace(/\\n/g, "")
-                            .replace(/\\"/g, '"')
-                    );
-                    let minimizedJson = JSON.stringify(input);
-                    document.getElementById("output").textContent = minimizedJson.replace(
-                        /"/g,
-                        "'"
-                    );
-                } catch (error) {
-                    alert("Invalid JSON");
-                }
-                document.getElementById("input").value = "";
-            });
+            // Event listener pour le bouton "Parse"
+            document.getElementById('parse').addEventListener('click', () => {
+                parseJSON('parse')
+            })
 
-            document.getElementById("copy").addEventListener("click", () => {
-                const outputText = document.getElementById("output").textContent;
+            // Event listener pour le bouton "Minimize"
+            document.getElementById('minimize').addEventListener('click', () => {
+                parseJSON('minimize')
+            })
+
+            // Event listener pour le bouton "Copy to Clipboard"
+            document.getElementById('copy').addEventListener('click', () => {
+                const outputText = document.getElementById('outputCode').textContent
                 navigator.clipboard
                     .writeText(outputText)
-                    .catch((err) => alert("Failed to copy text"));
-            });
+                    .then(() => alert('Texte copié dans le presse-papiers'))
+                    .catch(() => alert('Échec de la copie du texte'))
+            })
+
+            // Event listener pour le bouton "Voir en grand"
+            document.getElementById('expand').addEventListener('click', () => {
+                const outputText = document.getElementById('outputCode').textContent
+                if (outputText.trim() === '') {
+                    alert('Aucun JSON à afficher')
+                    return
+                }
+                document.getElementById('modalCode').textContent = outputText
+                Prism.highlightElement(document.getElementById('modalCode'))
+                document.getElementById('modal').classList.remove('hidden')
+            })
+
+            // Event listener pour fermer la modale
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('modal').classList.add('hidden')
+            })
+
+            // Optionnel : Fermer la modale en cliquant en dehors de celle-ci
+            window.addEventListener('click', (event) => {
+                const modal = document.getElementById('modal')
+                if (event.target === modal) {
+                    modal.classList.add('hidden')
+                }
+            })
         </script>
     </body>
 </html>
