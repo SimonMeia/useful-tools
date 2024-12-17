@@ -61,39 +61,40 @@
 
         <script>
             const tools = [
-                { name: "Characters counter & Text generator", url: "./characters" },
-                { name: "Duration Sum", url: "./duration-sum" },
-                { name: "JSON Parse", url: "./json-parse" },
-                { name: "JSON Filter", url: "./json-filter" },
-                { name: "CSV to SQL inserts", url: "./csv-to-insert-sql" },
-                { name: "Location finder", url: "./location-finder" },
-                { name: "Pace Calculator", url: "./pace" },
+                { name: 'Characters counter & Text generator', url: './characters' },
+                { name: 'Duration Sum', url: './duration-sum' },
+                { name: 'JSON Parse', url: './json-parse' },
+                { name: 'JSON Filter', url: './json-filter' },
+                { name: 'CSV to SQL inserts', url: './csv-to-insert-sql' },
+                { name: 'CSS Tricks', url: 'https://css-tricks.meia.dev', external: true },
+                { name: 'Location finder', url: './location-finder' },
+                { name: 'Pace Calculator', url: './pace' },
                 {
-                    name: "Image Hosting API",
-                    url: "https://image-hoster-nine.vercel.app/docs",
+                    name: 'Image Hosting API',
+                    url: 'https://image-hoster-nine.vercel.app/docs',
                     external: true,
                 },
-            ];
+            ]
 
-            const toolsList = document.getElementById("toolsList");
-            const template = document.getElementById("tool-template");
+            const toolsList = document.getElementById('toolsList')
+            const template = document.getElementById('tool-template')
 
             tools.forEach((tool) => {
-                const clone = template.content.cloneNode(true);
-                const a = clone.querySelector("a");
-                const span = clone.querySelector(".tool-name");
-                const externalIcon = clone.querySelector(".external-icon");
+                const clone = template.content.cloneNode(true)
+                const a = clone.querySelector('a')
+                const span = clone.querySelector('.tool-name')
+                const externalIcon = clone.querySelector('.external-icon')
 
-                a.href = tool.url;
-                span.textContent = tool.name;
+                a.href = tool.url
+                span.textContent = tool.name
 
                 if (tool.external) {
-                    a.target = "_blank";
-                    externalIcon.classList.remove("hidden");
+                    a.target = '_blank'
+                    externalIcon.classList.remove('hidden')
                 }
 
-                toolsList.appendChild(clone);
-            });
+                toolsList.appendChild(clone)
+            })
         </script>
     </body>
 </html>
