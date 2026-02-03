@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
     <head>
         <meta charset="UTF-8" />
@@ -150,60 +150,60 @@
         </div>
 
         <script>
-            const inputFields = document.getElementById("inputFields");
-            const resultDiv = document.getElementById("result");
-            const radioButtons = document.querySelectorAll('input[name="calculation"]');
+            const inputFields = document.getElementById('inputFields')
+            const resultDiv = document.getElementById('result')
+            const radioButtons = document.querySelectorAll('input[name="calculation"]')
 
             // Configuration des champs pour chaque type de calcul
             const fieldConfigs = {
                 pace: [
-                    { id: "distance", label: "Distance (km)", placeholder: "Entrez la distance" },
-                    { id: "duration", label: "Durée (minutes)", placeholder: "Entrez la durée" },
+                    { id: 'distance', label: 'Distance (km)', placeholder: 'Entrez la distance' },
+                    { id: 'duration', label: 'Durée (minutes)', placeholder: 'Entrez la durée' },
                 ],
                 distance: [
-                    { id: "duration", label: "Durée (minutes)", placeholder: "Entrez la durée" },
+                    { id: 'duration', label: 'Durée (minutes)', placeholder: 'Entrez la durée' },
                     {
-                        id: "pace",
-                        label: "Allure (min/km)",
-                        placeholder: "Format: 5.30 pour 5'30\"",
+                        id: 'pace',
+                        label: 'Allure (min/km)',
+                        placeholder: 'Format: 5.30 pour 5\'30"',
                     },
                 ],
                 duration: [
-                    { id: "distance", label: "Distance (km)", placeholder: "Entrez la distance" },
+                    { id: 'distance', label: 'Distance (km)', placeholder: 'Entrez la distance' },
                     {
-                        id: "pace",
-                        label: "Allure (min/km)",
-                        placeholder: "Format: 5.30 pour 5'30\"",
+                        id: 'pace',
+                        label: 'Allure (min/km)',
+                        placeholder: 'Format: 5.30 pour 5\'30"',
                     },
                 ],
-            };
+            }
 
             // Convertit un nombre décimal (ex: 6.30) en minutes décimales (ex: 6.5)
             function paceInputToMinutes(input) {
-                const wholePart = Math.floor(input);
-                const decimalPart = input % 1;
-                const seconds = Math.round(decimalPart * 100); // 0.30 -> 30 secondes
-                return wholePart + seconds / 60;
+                const wholePart = Math.floor(input)
+                const decimalPart = input % 1
+                const seconds = Math.round(decimalPart * 100) // 0.30 -> 30 secondes
+                return wholePart + seconds / 60
             }
 
             function formatTime(minutes) {
-                const totalSeconds = Math.round(minutes * 60);
-                const mins = Math.floor(totalSeconds / 60);
-                const secs = totalSeconds % 60;
-                return `${mins}'${secs.toString().padStart(2, "0")}"`;
+                const totalSeconds = Math.round(minutes * 60)
+                const mins = Math.floor(totalSeconds / 60)
+                const secs = totalSeconds % 60
+                return `${mins}'${secs.toString().padStart(2, '0')}"`
             }
 
             function formatTimeHMS(minutes) {
-                const hours = Math.floor(minutes / 60);
-                const mins = Math.floor(minutes % 60);
-                const secs = Math.round((minutes % 1) * 60);
+                const hours = Math.floor(minutes / 60)
+                const mins = Math.floor(minutes % 60)
+                const secs = Math.round((minutes % 1) * 60)
 
                 if (hours > 0) {
-                    return `${hours}:${mins.toString().padStart(2, "0")}:${secs
+                    return `${hours}:${mins.toString().padStart(2, '0')}:${secs
                         .toString()
-                        .padStart(2, "0")}`;
+                        .padStart(2, '0')}`
                 }
-                return `${mins}:${secs.toString().padStart(2, "0")}`;
+                return `${mins}:${secs.toString().padStart(2, '0')}`
             }
 
             function createInputField(field) {
@@ -223,89 +223,89 @@
                             />
                         </div>
                     </div>
-                `;
+                `
             }
 
             function updateFields(calculationType) {
-                const fields = fieldConfigs[calculationType];
-                inputFields.innerHTML = fields.map(createInputField).join("");
+                const fields = fieldConfigs[calculationType]
+                inputFields.innerHTML = fields.map(createInputField).join('')
 
                 // Réinitialiser le résultat
                 resultDiv.innerHTML = `
                     <p class="text-center text-gray-600">
                         Remplissez les champs pour obtenir le résultat
-                    </p>`;
+                    </p>`
 
                 // Ajouter les écouteurs d'événements aux nouveaux champs
                 fields.forEach((field) => {
-                    const input = document.getElementById(field.id);
-                    input.addEventListener("input", calculate);
-                });
+                    const input = document.getElementById(field.id)
+                    input.addEventListener('input', calculate)
+                })
             }
 
             function calculate() {
                 const calculationType = document.querySelector(
-                    'input[name="calculation"]:checked'
-                ).value;
-                const values = {};
+                    'input[name="calculation"]:checked',
+                ).value
+                const values = {}
 
                 // Récupérer les valeurs des champs actuels
                 fieldConfigs[calculationType].forEach((field) => {
-                    let value = parseFloat(document.getElementById(field.id)?.value || "");
-                    if (field.id === "pace" && !isNaN(value)) {
-                        value = paceInputToMinutes(value);
+                    let value = parseFloat(document.getElementById(field.id)?.value || '')
+                    if (field.id === 'pace' && !isNaN(value)) {
+                        value = paceInputToMinutes(value)
                     }
-                    values[field.id] = value;
-                });
+                    values[field.id] = value
+                })
 
-                if (Object.values(values).some(isNaN)) return;
+                if (Object.values(values).some(isNaN)) return
 
-                let result;
+                let result
                 switch (calculationType) {
-                    case "pace":
-                        result = values.duration / values.distance;
+                    case 'pace':
+                        result = values.duration / values.distance
                         resultDiv.innerHTML = `
                             <p class="text-center text-gray-800 font-medium">
                                 Allure calculée : ${formatTime(result)} min/km
                             </p>
                             <p class="text-center text-gray-600 text-sm">
                                 Temps total : ${formatTimeHMS(values.duration)}
-                            </p>`;
-                        break;
-                    case "distance":
-                        result = values.duration / values.pace;
+                            </p>`
+                        break
+                    case 'distance':
+                        result = values.duration / values.pace
                         resultDiv.innerHTML = `
                             <p class="text-center text-gray-800 font-medium">
                                 Distance : ${result.toFixed(3)} km
                             </p>
                             <p class="text-center text-gray-600 text-sm">
                                 Pour ${formatTimeHMS(values.duration)} de course à ${formatTime(
-                            values.pace
-                        )} min/km
-                            </p>`;
-                        break;
-                    case "duration":
-                        result = values.distance * values.pace;
+                                    values.pace,
+                                )} min/km
+                            </p>`
+                        break
+                    case 'duration':
+                        result = values.distance * values.pace
                         resultDiv.innerHTML = `
                             <p class="text-center text-gray-800 font-medium">
                                 Temps total : ${formatTimeHMS(
-                                    result
+                                    result,
                                 )} <span class="text-sm">(${formatTime(result)} min)</span>
                             </p>
                             <p class="text-center text-gray-600 text-sm">
                                 Pour ${values.distance} km à ${formatTime(values.pace)} min/km
-                            </p>`;
-                        break;
+                            </p>`
+                        break
                 }
             }
 
             // Initialiser les champs pour le calcul d'allure (option par défaut)
-            updateFields("pace");
+            updateFields('pace')
 
             // Ajouter les écouteurs d'événements aux boutons radio
             radioButtons.forEach((radio) => {
-                radio.addEventListener("change", (e) => updateFields(e.target.value));
-            });
+                radio.addEventListener('change', (e) => updateFields(e.target.value))
+            })
         </script>
     </body>
 </html>
