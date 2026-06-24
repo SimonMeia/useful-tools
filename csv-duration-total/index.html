@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Total des durées CSV</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+        <a href="/">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="w-8 h-8 text-gray-500 hover:text-gray-700 cursor-pointer fixed top-4 left-4"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9.75l9-7.5 9 7.5v9.75a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 19.5V9.75z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 22V12h6v10"
+                />
+            </svg>
+        </a>
+
+        <div class="w-full max-w-2xl">
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between">
+                    <h1 class="text-xl font-semibold text-gray-800">Total des durées CSV</h1>
+                    <div class="group relative flex items-center">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            class="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                            />
+                        </svg>
+                        <div
+                            class="absolute w-72 bg-gray-900 text-white text-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none -left-64 top-10 z-10"
+                        >
+                            Importe un CSV contenant les colonnes Description et Duration. Les
+                            lignes dont la description commence par NC - sont ignorées.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6 p-6">
+                    <div class="space-y-2">
+                        <label for="csvFile" class="block text-sm font-medium text-gray-700">
+                            Fichier CSV
+                        </label>
+                        <input
+                            type="file"
+                            id="csvFile"
+                            accept=".csv,text/csv"
+                            class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                        />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="csvInput" class="block text-sm font-medium text-gray-700">
+                            Ou coller le contenu CSV
+                        </label>
+                        <textarea
+                            id="csvInput"
+                            rows="8"
+                            class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                            placeholder='"Description","Duration","Member",...'
+                        ></textarea>
+                    </div>
+
+                    <button
+                        onclick="calculateCsvTotal()"
+                        class="w-full p-3 bg-blue-500 text-white font-medium rounded-lg border border-transparent hover:bg-blue-600 transition duration-200 ease-in-out"
+                    >
+                        Calculer le total
+                    </button>
+
+                    <div
+                        id="result"
+                        class="rounded-lg border border-gray-300 bg-gray-100 p-6 text-center shadow-inner"
+                    >
+                        <p class="text-sm font-medium text-gray-600">Total comptabilisé</p>
+                        <p id="totalDisplay" class="mt-2 text-6xl font-bold text-gray-900">
+                            0h 00min
+                        </p>
+                        <p id="detailsDisplay" class="mt-3 text-sm text-gray-600">
+                            0 ligne comptée, 0 ligne ignorée
+                        </p>
+                    </div>
+
+                    <button
+                        onclick="copyTotal()"
+                        class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-3 rounded text-sm"
+                    >
+                        Copier le total
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const csvFile = document.getElementById("csvFile");
+            const csvInput = document.getElementById("csvInput");
+            const totalDisplay = document.getElementById("totalDisplay");
+            const detailsDisplay = document.getElementById("detailsDisplay");
+
+            csvFile.addEventListener("change", async (event) => {
+                const [file] = event.target.files;
+                if (!file) {
+                    return;
+                }
+
+                csvInput.value = await file.text();
+                calculateCsvTotal();
+            });
+
+            function parseCsv(text) {
+                const rows = [];
+                let row = [];
+                let field = "";
+                let insideQuotes = false;
+
+                for (let i = 0; i < text.length; i += 1) {
+                    const char = text[i];
+                    const nextChar = text[i + 1];
+
+                    if (char === '"') {
+                        if (insideQuotes && nextChar === '"') {
+                            field += '"';
+                            i += 1;
+                        } else {
+                            insideQuotes = !insideQuotes;
+                        }
+                    } else if (char === "," && !insideQuotes) {
+                        row.push(field);
+                        field = "";
+                    } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+                        if (char === "\r" && nextChar === "\n") {
+                            i += 1;
+                        }
+                        row.push(field);
+                        rows.push(row);
+                        row = [];
+                        field = "";
+                    } else {
+                        field += char;
+                    }
+                }
+
+                if (field !== "" || row.length > 0) {
+                    row.push(field);
+                    rows.push(row);
+                }
+
+                return rows.filter((csvRow) => csvRow.some((value) => value.trim() !== ""));
+            }
+
+            function parseDuration(duration) {
+                const parts = duration.trim().split(":").map(Number);
+                if (parts.length !== 3 || parts.some(Number.isNaN)) {
+                    throw new Error(`Durée invalide: ${duration}`);
+                }
+
+                const [hours, minutes, seconds] = parts;
+                return hours * 3600 + minutes * 60 + seconds;
+            }
+
+            function formatDuration(totalSeconds) {
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                return `${hours}h ${minutes.toString().padStart(2, "0")}min ${seconds
+                    .toString()
+                    .padStart(2, "0")}s`;
+            }
+
+            function calculateCsvTotal() {
+                try {
+                    const rows = parseCsv(csvInput.value.trim());
+                    if (rows.length === 0) {
+                        throw new Error("Aucune ligne CSV trouvée.");
+                    }
+
+                    const headers = rows[0].map((header) => header.replace(/^\uFEFF/, "").trim());
+                    const descriptionIndex = headers.indexOf("Description");
+                    const durationIndex = headers.indexOf("Duration");
+
+                    if (descriptionIndex === -1 || durationIndex === -1) {
+                        throw new Error("Colonnes Description et Duration introuvables.");
+                    }
+
+                    let totalSeconds = 0;
+                    let countedRows = 0;
+                    let ignoredRows = 0;
+
+                    rows.slice(1).forEach((row) => {
+                        const description = (row[descriptionIndex] || "").trim();
+
+                        if (description.startsWith("NC -")) {
+                            ignoredRows += 1;
+                            return;
+                        }
+
+                        totalSeconds += parseDuration(row[durationIndex] || "");
+                        countedRows += 1;
+                    });
+
+                    totalDisplay.textContent = formatDuration(totalSeconds);
+                    detailsDisplay.textContent = `${countedRows} ligne${countedRows > 1 ? "s" : ""} comptée${countedRows > 1 ? "s" : ""}, ${ignoredRows} ligne${ignoredRows > 1 ? "s" : ""} ignorée${ignoredRows > 1 ? "s" : ""}`;
+                } catch (error) {
+                    totalDisplay.textContent = "Erreur";
+                    detailsDisplay.textContent = error.message;
+                }
+            }
+
+            function copyTotal() {
+                navigator.clipboard.writeText(totalDisplay.textContent).then(() => {
+                    alert("Total copié dans le presse-papiers !");
+                });
+            }
+        </script>
+    </body>
+</html>
