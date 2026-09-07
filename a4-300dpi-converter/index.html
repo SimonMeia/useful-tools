@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Convertisseur A4 300 DPI</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+        <a href="/" aria-label="Retour à l'accueil">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="w-8 h-8 text-gray-500 hover:text-gray-700 cursor-pointer fixed top-4 left-4"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9.75l9-7.5 9 7.5v9.75a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 19.5V9.75z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 22V12h6v10"
+                />
+            </svg>
+        </a>
+
+        <main class="max-w-lg mx-auto w-full">
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between gap-4">
+                    <h1 class="text-xl font-semibold text-gray-800">Convertisseur A4 300 DPI</h1>
+                    <div class="group relative flex items-center shrink-0">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            class="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-help"
+                            aria-label="Informations sur la conversion"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                            />
+                        </svg>
+                        <div
+                            class="absolute z-10 w-64 bg-gray-900 text-white text-sm rounded-lg p-3 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 pointer-events-none -right-2 top-10"
+                        >
+                            Les dimensions d'une maquette à 300 DPI sont converties en unités CSS d'impression : mm pour les dimensions et pt pour la typographie.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <fieldset>
+                        <legend class="block text-sm font-medium text-gray-700 mb-2">
+                            Type de conversion
+                        </legend>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="conversion" value="mm" checked class="text-blue-500" />
+                                <span class="text-sm text-gray-700">Dimensions et positions <span class="font-medium">→ mm</span></span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="conversion" value="pt" class="text-blue-500" />
+                                <span class="text-sm text-gray-700">Taille de police <span class="font-medium">→ pt</span></span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <div>
+                        <label for="pixelValue" class="block text-sm font-medium text-gray-700 mb-1">
+                            Valeur en pixels
+                        </label>
+                        <input
+                            type="number"
+                            id="pixelValue"
+                            min="0"
+                            step="any"
+                            inputmode="decimal"
+                            class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border outline-none"
+                            placeholder="Ex. 118"
+                            autofocus
+                        />
+                    </div>
+
+                    <div id="result" class="p-4 bg-gray-100 rounded-lg shadow-inner border border-gray-300 text-center">
+                        <p class="text-sm text-gray-600">Saisissez une valeur en pixels.</p>
+                    </div>
+
+                    <button
+                        id="copyButton"
+                        type="button"
+                        disabled
+                        class="w-full p-3 bg-white text-blue-500 font-medium rounded-lg border border-blue-500 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 ease-in-out"
+                    >
+                        Copier le résultat
+                    </button>
+
+                    <p id="formula" class="text-xs text-gray-500 text-center">
+                        px × 25,4 / 300 = mm
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            const pixelValue = document.getElementById('pixelValue')
+            const result = document.getElementById('result')
+            const copyButton = document.getElementById('copyButton')
+            const formula = document.getElementById('formula')
+            const conversionInputs = document.querySelectorAll('input[name="conversion"]')
+
+            let resultToCopy = ''
+
+            function formatNumber(value) {
+                return new Intl.NumberFormat('fr-CH', {
+                    maximumFractionDigits: 4,
+                }).format(value)
+            }
+
+            function getConversionType() {
+                return document.querySelector('input[name="conversion"]:checked').value
+            }
+
+            function updateResult() {
+                const pixels = Number.parseFloat(pixelValue.value.replace(',', '.'))
+                const type = getConversionType()
+                const unit = type === 'mm' ? 'mm' : 'pt'
+                const multiplier = type === 'mm' ? 25.4 / 300 : 72 / 300
+
+                formula.textContent = type === 'mm' ? 'px × 25,4 / 300 = mm' : 'px × 72 / 300 = pt'
+
+                if (Number.isNaN(pixels) || pixels < 0) {
+                    result.innerHTML = '<p class="text-sm text-gray-600">Saisissez une valeur positive en pixels.</p>'
+                    copyButton.disabled = true
+                    resultToCopy = ''
+                    return
+                }
+
+                const convertedValue = pixels * multiplier
+                resultToCopy = `${formatNumber(convertedValue)}${unit}`
+                result.innerHTML = `
+                    <p class="text-sm text-gray-600">${formatNumber(pixels)} px correspondent à</p>
+                    <p class="text-3xl font-semibold text-gray-800 mt-1">${resultToCopy}</p>
+                `
+                copyButton.disabled = false
+            }
+
+            async function copyResult() {
+                if (!resultToCopy) {
+                    return
+                }
+
+                try {
+                    await navigator.clipboard.writeText(resultToCopy)
+                    copyButton.textContent = 'Résultat copié !'
+                } catch (error) {
+                    copyButton.textContent = 'Copie impossible'
+                }
+
+                window.setTimeout(() => {
+                    copyButton.textContent = 'Copier le résultat'
+                }, 1800)
+            }
+
+            pixelValue.addEventListener('input', updateResult)
+            conversionInputs.forEach((input) => input.addEventListener('change', updateResult))
+            copyButton.addEventListener('click', copyResult)
+        </script>
+    </body>
+</html>
